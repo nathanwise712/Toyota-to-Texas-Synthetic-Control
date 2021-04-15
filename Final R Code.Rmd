@@ -1,0 +1,1473 @@
+---
+title: "Toyota to Texas"
+author: "Nathan Wise"
+date: "11/14/2020"
+output: word_document
+---
+
+```{r}
+#Imports important libraries
+library(Synth)
+library(ggplot2)
+```
+
+```{r}
+#Reads in the data set
+df <- read.csv("C:/Users/wisen/OneDrive/College/Fall 2020/488 Project/BigDatacsv.csv")
+```
+
+```{r}
+#Produces summary statistics
+library(Hmisc)
+qb <- summary(df)
+write.csv(qb, "C:/Users/wisen/OneDrive/Desktop/findata3.csv")
+```
+
+```{r}
+#Creates the synthetic control model for Plano
+dataprep.out <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2010:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 12,
+                         controls.identifier = c(1:9,11,13:19),
+                         time.optimize.ssr = 2010:2014,
+                         time.plot = 2010:2019
+                         )
+```
+
+```{r}
+synth.out = synth(data.prep.obj = dataprep.out, method = "All" )
+```
+
+```{r}
+#Compares the Real and Synthetic Plano
+synth.tables = synth.tab(dataprep.res = dataprep.out, 
+                         synth.res = synth.out)
+synth.tables$tab.pred[,]
+```
+
+```{r}
+#Lists the Gaps between the Real and Synthetic Plano
+gaps = dataprep.out$Y1plot - (dataprep.out$Y0plot 
+                                    %*% synth.out$solution.w)
+gaps
+```
+
+
+```{r}
+#Lists the Weights used in composing the Synthetic Plano
+synth.tables$tab.w
+```
+```{r}
+#Graphs the Real and Synthetic Planos
+path.plot(synth.res = synth.out, dataprep.res = dataprep.out,
+          Ylab = "Average Home Price",
+          Xlab = "Year",
+          Legend = c("Plano","Synthetic Plano"),
+          Legend.position = "bottomright")
+```
+
+
+```{r}
+#Creates placebo tests for all cities in the control group
+dataprep.out1 <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2010:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 1,
+                         controls.identifier = c(2:9,11:19),
+                         time.optimize.ssr = 2010:2014,
+                         time.plot = 2010:2019
+                         )
+
+synth.out1 = synth(data.prep.obj = dataprep.out1, method = "All" )
+
+dataprep.out2 <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2010:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 2,
+                         controls.identifier = c(1,3:9,11:19),
+                         time.optimize.ssr = 2010:2014,
+                         time.plot = 2010:2019
+                         )
+
+synth.out2 = synth(data.prep.obj = dataprep.out2, method = "All" )
+
+dataprep.out3 <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2010:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 3,
+                         controls.identifier = c(1:2,4:9,11:19),
+                         time.optimize.ssr = 2010:2014,
+                         time.plot = 2010:2019
+                         )
+
+synth.out3 = synth(data.prep.obj = dataprep.out3, method = "All" )
+
+dataprep.out4 <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2010:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 4,
+                         controls.identifier = c(1:3,5:9,11:19),
+                         time.optimize.ssr = 2010:2014,
+                         time.plot = 2010:2019
+                         )
+
+synth.out4 = synth(data.prep.obj = dataprep.out4, method = "All" )
+
+dataprep.out5 <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2010:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 5,
+                         controls.identifier = c(1:3,6:9,11:19),
+                         time.optimize.ssr = 2010:2014,
+                         time.plot = 2010:2019
+                         )
+
+synth.out5 = synth(data.prep.obj = dataprep.out5, method = "All" )
+
+
+dataprep.out6 <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2010:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 6,
+                         controls.identifier = c(1:5,7:9,11:19),
+                         time.optimize.ssr = 2010:2014,
+                         time.plot = 2010:2019
+                         )
+
+synth.out6 = synth(data.prep.obj = dataprep.out6, method = "All" )
+
+dataprep.out7 <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2010:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 7,
+                         controls.identifier = c(1:6,8,9,11:19),
+                         time.optimize.ssr = 2010:2014,
+                         time.plot = 2010:2019
+                         )
+
+synth.out7 = synth(data.prep.obj = dataprep.out7, method = "All" )
+
+dataprep.out8 <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2010:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 8,
+                         controls.identifier = c(1:7,9,11:19),
+                         time.optimize.ssr = 2010:2014,
+                         time.plot = 2010:2019
+                         )
+
+synth.out8 = synth(data.prep.obj = dataprep.out8, method = "All" )
+
+dataprep.out9 <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2010:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 9,
+                         controls.identifier = c(1:8,11:19),
+                         time.optimize.ssr = 2010:2014,
+                         time.plot = 2010:2019
+                         )
+
+synth.out9 = synth(data.prep.obj = dataprep.out9, method = "All" )
+
+
+dataprep.out11 <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2010:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 11,
+                         controls.identifier = c(1:9,12:19),
+                         time.optimize.ssr = 2010:2014,
+                         time.plot = 2010:2019
+                         )
+
+synth.out11 = synth(data.prep.obj = dataprep.out11, method = "All" )
+
+dataprep.out13 <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2010:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 13,
+                         controls.identifier = c(1:9,11,12,14:19),
+                         time.optimize.ssr = 2010:2014,
+                         time.plot = 2010:2019
+                         )
+
+synth.out13 = synth(data.prep.obj = dataprep.out13, method = "All" )
+
+dataprep.out14 <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2010:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 14,
+                         controls.identifier = c(1:9,11:13,15:19),
+                         time.optimize.ssr = 2010:2014,
+                         time.plot = 2010:2019
+                         )
+
+synth.out14 = synth(data.prep.obj = dataprep.out14, method = "All" )
+
+dataprep.out15 <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2010:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 15,
+                         controls.identifier = c(1:9,11:14,16:19),
+                         time.optimize.ssr = 2010:2014,
+                         time.plot = 2010:2019
+                         )
+
+synth.out15 = synth(data.prep.obj = dataprep.out15, method = "All" )
+
+dataprep.out16 <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2010:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 16,
+                         controls.identifier = c(1:9,11:15,17:19),
+                         time.optimize.ssr = 2010:2014,
+                         time.plot = 2010:2019
+                         )
+
+synth.out16 = synth(data.prep.obj = dataprep.out16, method = "All" )
+
+dataprep.out17 <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2010:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 17,
+                         controls.identifier = c(1:9,11:16,18,19),
+                         time.optimize.ssr = 2010:2014,
+                         time.plot = 2010:2019
+                         )
+
+synth.out17 = synth(data.prep.obj = dataprep.out17, method = "All" )
+
+dataprep.out18 <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2010:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 18,
+                         controls.identifier = c(1:9,11:17,19),
+                         time.optimize.ssr = 2010:2014,
+                         time.plot = 2010:2019
+                         )
+
+synth.out18 = synth(data.prep.obj = dataprep.out18, method = "All" )
+
+dataprep.out19 <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2010:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 19,
+                         controls.identifier = c(1:9,11:18),
+                         time.optimize.ssr = 2010:2014,
+                         time.plot = 2010:2019
+                         )
+
+synth.out19= synth(data.prep.obj = dataprep.out19, method = "All" )
+
+
+
+
+```
+```{r}
+path.plot(synth.res = synth.out, dataprep.res = dataprep.out,
+          Ylab = "Average Home Price",
+          Xlab = "Year",
+          Legend = c("Plano","Synthetic Plano"),
+          Legend.position = "bottomright")
+
+```
+
+
+```{r}
+#Plots all gaps between real and synthetic cities together
+gaps.plot(synth.res = synth.out, dataprep.res = dataprep.out,
+          Ylab = "Average Home Price",
+          Xlab = "Year"
+          , Ylim = c(-100000,100000))
+par(new=TRUE)
+gaps.plot(synth.res = synth.out1, dataprep.res = dataprep.out1,
+          Ylab = "Average Home Price",
+          Xlab = "Year"
+          , Ylim = c(-100000,100000))
+par(new=TRUE)
+gaps.plot(synth.res = synth.out2, dataprep.res = dataprep.out2,
+          Ylab = "Average Home Price",
+          Xlab = "Year"
+          , Ylim = c(-100000,100000))
+par(new=TRUE)
+gaps.plot(synth.res = synth.out3, dataprep.res = dataprep.out3,
+          Ylab = "Average Home Price",
+          Xlab = "Year"
+          , Ylim = c(-100000,100000))
+par(new=TRUE)
+gaps.plot(synth.res = synth.out4, dataprep.res = dataprep.out4,
+          Ylab = "Average Home Price",
+          Xlab = "Year"
+          , Ylim = c(-100000,100000))
+par(new=TRUE)
+gaps.plot(synth.res = synth.out5, dataprep.res = dataprep.out5,
+          Ylab = "Average Home Price",
+          Xlab = "Year"
+          , Ylim = c(-100000,100000))
+par(new=TRUE)
+gaps.plot(synth.res = synth.out6, dataprep.res = dataprep.out6,
+          Ylab = "Average Home Price",
+          Xlab = "Year"
+          , Ylim = c(-100000,100000))
+par(new=TRUE)
+gaps.plot(synth.res = synth.out7, dataprep.res = dataprep.out7,
+          Ylab = "Average Home Price",
+          Xlab = "Year"
+          , Ylim = c(-100000,100000))
+par(new=TRUE)
+gaps.plot(synth.res = synth.out8, dataprep.res = dataprep.out8,
+          Ylab = "Average Home Price",
+          Xlab = "Year"
+          , Ylim = c(-100000,100000))
+par(new=TRUE)
+gaps.plot(synth.res = synth.out9, dataprep.res = dataprep.out9,
+          Ylab = "Average Home Price",
+          Xlab = "Year"
+          , Ylim = c(-100000,100000))
+par(new=TRUE)
+
+gaps.plot(synth.res = synth.out11, dataprep.res = dataprep.out11,
+          Ylab = "Average Home Price",
+          Xlab = "Year"
+          , Ylim = c(-100000,100000))
+par(new=TRUE)
+gaps.plot(synth.res = synth.out13, dataprep.res = dataprep.out13,
+          Ylab = "Average Home Price",
+          Xlab = "Year"
+          , Ylim = c(-100000,100000))
+par(new=TRUE)
+gaps.plot(synth.res = synth.out14, dataprep.res = dataprep.out14,
+          Ylab = "Average Home Price",
+          Xlab = "Year"
+          , Ylim = c(-100000,100000))
+par(new=TRUE)
+gaps.plot(synth.res = synth.out15, dataprep.res = dataprep.out15,
+          Ylab = "Average Home Price",
+          Xlab = "Year"
+          , Ylim = c(-100000,100000))
+par(new=TRUE)
+
+gaps.plot(synth.res = synth.out17, dataprep.res = dataprep.out17,
+          Ylab = "Average Home Price",
+          Xlab = "Year"
+          , Ylim = c(-100000,100000))
+par(new=TRUE)
+gaps.plot(synth.res = synth.out18, dataprep.res = dataprep.out18,
+          Ylab = "Average Home Price",
+          Xlab = "Year"
+          , Ylim = c(-100000,100000))
+par(new=TRUE)
+gaps.plot(synth.res = synth.out19, dataprep.res = dataprep.out19,
+          Ylab = "Average Home Price",
+          Xlab = "Year"
+          , Ylim = c(-100000,100000))
+par(new=TRUE)
+
+```
+```{r}
+#Creates variables for the gaps between the real and synthetic cities
+gaps = dataprep.out$Y1plot - (dataprep.out$Y0plot 
+                                    %*% synth.out$solution.w)
+gaps1 = dataprep.out1$Y1plot - (dataprep.out1$Y0plot 
+                                    %*% synth.out1$solution.w)
+gaps2 = dataprep.out2$Y1plot - (dataprep.out2$Y0plot 
+                                    %*% synth.out2$solution.w)
+gaps3 = dataprep.out3$Y1plot - (dataprep.out3$Y0plot 
+                                    %*% synth.out3$solution.w)
+gaps4 = dataprep.out4$Y1plot - (dataprep.out4$Y0plot 
+                                    %*% synth.out4$solution.w)
+gaps5 = dataprep.out5$Y1plot - (dataprep.out5$Y0plot 
+                                    %*% synth.out5$solution.w)
+gaps6 = dataprep.out6$Y1plot - (dataprep.out6$Y0plot 
+                                    %*% synth.out6$solution.w)
+gaps7 = dataprep.out7$Y1plot - (dataprep.out7$Y0plot 
+                                    %*% synth.out7$solution.w)
+gaps8 = dataprep.out8$Y1plot - (dataprep.out8$Y0plot 
+                                    %*% synth.out8$solution.w)
+gaps9 = dataprep.out9$Y1plot - (dataprep.out9$Y0plot 
+                                    %*% synth.out9$solution.w)
+
+gaps11 = dataprep.out11$Y1plot - (dataprep.out11$Y0plot 
+                                    %*% synth.out11$solution.w)
+gaps13 = dataprep.out13$Y1plot - (dataprep.out13$Y0plot 
+                                    %*% synth.out13$solution.w)
+gaps14 = dataprep.out14$Y1plot - (dataprep.out14$Y0plot 
+                                    %*% synth.out14$solution.w)
+gaps15 = dataprep.out15$Y1plot - (dataprep.out15$Y0plot 
+                                    %*% synth.out15$solution.w)
+
+gaps17 = dataprep.out17$Y1plot - (dataprep.out17$Y0plot 
+                                    %*% synth.out17$solution.w)
+gaps18 = dataprep.out18$Y1plot - (dataprep.out18$Y0plot 
+                                    %*% synth.out18$solution.w)
+gaps19 = dataprep.out19$Y1plot - (dataprep.out19$Y0plot 
+                                    %*% synth.out19$solution.w)
+
+```
+
+
+```{r}
+gaps
+gaps1
+gaps2
+gaps3
+gaps4
+gaps5
+gaps6
+gaps7
+gaps8
+gaps9
+
+gaps11
+gaps13
+gaps14
+gaps15
+
+gaps17
+gaps18
+gaps19
+
+
+```
+
+```{r}
+#Plots Plano's isolated gaps
+gaps.plot(synth.res = synth.out, dataprep.res = dataprep.out,
+          Ylab = "Average Home Price",
+          Xlab = "Year"
+          , Ylim = c(-100000,100000))
+```
+```{r}
+#Model without Houston market
+dataprep.out <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2010:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 12,
+                         controls.identifier = c(1:9,11,13:16,18,20),
+                         time.optimize.ssr = 2010:2014,
+                         time.plot = 2010:2019
+                         )
+synth.out = synth(data.prep.obj = dataprep.out, method = "All" )
+
+dataprep.out1 <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2010:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 1,
+                         controls.identifier = c(2:16,18,20),
+                         time.optimize.ssr = 2010:2014,
+                         time.plot = 2010:2019
+                         )
+
+synth.out1 = synth(data.prep.obj = dataprep.out1, method = "All" )
+
+dataprep.out2 <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2010:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 2,
+                         controls.identifier = c(1,3:16,18,20),
+                         time.optimize.ssr = 2010:2014,
+                         time.plot = 2010:2019
+                         )
+
+synth.out2 = synth(data.prep.obj = dataprep.out2, method = "All" )
+
+dataprep.out3 <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2010:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 3,
+                         controls.identifier = c(1,2,4:16,18,20),
+                         time.optimize.ssr = 2010:2014,
+                         time.plot = 2010:2019
+                         )
+
+synth.out3 = synth(data.prep.obj = dataprep.out3, method = "All" )
+
+dataprep.out4 <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2010:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 4,
+                         controls.identifier = c(1:3,5:16,18,20),
+                         time.optimize.ssr = 2010:2014,
+                         time.plot = 2010:2019
+                         )
+
+synth.out4 = synth(data.prep.obj = dataprep.out4, method = "All" )
+
+dataprep.out5 <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2010:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 5,
+                         controls.identifier = c(1:4,6:16,18,20),
+                         time.optimize.ssr = 2010:2014,
+                         time.plot = 2010:2019
+                         )
+
+synth.out5 = synth(data.prep.obj = dataprep.out5, method = "All" )
+
+
+dataprep.out6 <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2010:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 6,
+                         controls.identifier = c(1:5,7:16,18,20),
+                         time.optimize.ssr = 2010:2014,
+                         time.plot = 2010:2019
+                         )
+
+synth.out6 = synth(data.prep.obj = dataprep.out6, method = "All" )
+
+dataprep.out7 <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2010:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 7,
+                         controls.identifier = c(1:6,8:16,18,20),
+                         time.optimize.ssr = 2010:2014,
+                         time.plot = 2010:2019
+                         )
+
+synth.out7 = synth(data.prep.obj = dataprep.out7, method = "All" )
+
+dataprep.out8 <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2010:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 8,
+                         controls.identifier = c(1:7,9:16,18,20),
+                         time.optimize.ssr = 2010:2014,
+                         time.plot = 2010:2019
+                         )
+
+synth.out8 = synth(data.prep.obj = dataprep.out8, method = "All" )
+
+dataprep.out9 <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2010:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 9,
+                         controls.identifier = c(1:8,10:16,18,20),
+                         time.optimize.ssr = 2010:2014,
+                         time.plot = 2010:2019
+                         )
+
+synth.out9 = synth(data.prep.obj = dataprep.out9, method = "All" )
+
+
+dataprep.out10 <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2010:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 10,
+                         controls.identifier = c(1:9,11:16,18,20),
+                         time.optimize.ssr = 2010:2014,
+                         time.plot = 2010:2019
+                         )
+
+synth.out10 = synth(data.prep.obj = dataprep.out10, method = "All" )
+
+dataprep.out11 <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2010:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 11,
+                         controls.identifier = c(1:10,12:16,18,20),
+                         time.optimize.ssr = 2010:2014,
+                         time.plot = 2010:2019
+                         )
+
+synth.out11 = synth(data.prep.obj = dataprep.out11, method = "All" )
+
+dataprep.out13 <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2010:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 13,
+                         controls.identifier = c(1:12,14:16,18,20),
+                         time.optimize.ssr = 2010:2014,
+                         time.plot = 2010:2019
+                         )
+
+synth.out13 = synth(data.prep.obj = dataprep.out13, method = "All" )
+
+dataprep.out14 <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2010:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 14,
+                         controls.identifier = c(1:13,15:16,18,20),
+                         time.optimize.ssr = 2010:2014,
+                         time.plot = 2010:2019
+                         )
+
+synth.out14 = synth(data.prep.obj = dataprep.out14, method = "All" )
+
+dataprep.out15 <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2010:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 15,
+                         controls.identifier = c(1:14,16,18,20),
+                         time.optimize.ssr = 2010:2014,
+                         time.plot = 2010:2019
+                         )
+
+synth.out15 = synth(data.prep.obj = dataprep.out15, method = "All" )
+
+dataprep.out16 <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2010:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 16,
+                         controls.identifier = c(1:15,18,20),
+                         time.optimize.ssr = 2010:2014,
+                         time.plot = 2010:2019
+                         )
+
+synth.out16 = synth(data.prep.obj = dataprep.out16, method = "All" )
+
+
+dataprep.out18 <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2010:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 18,
+                         controls.identifier = c(1:16,20),
+                         time.optimize.ssr = 2010:2014,
+                         time.plot = 2010:2019
+                         )
+
+synth.out18 = synth(data.prep.obj = dataprep.out18, method = "All" )
+
+
+
+dataprep.out20 <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2010:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 20,
+                         controls.identifier = c(1:16,18),
+                         time.optimize.ssr = 2010:2014,
+                         time.plot = 2010:2019
+                         )
+
+synth.out20 = synth(data.prep.obj = dataprep.out20, method = "All" )
+
+gaps.plot(synth.res = synth.out, dataprep.res = dataprep.out,
+          Ylab = "Average Home Price",
+          Xlab = "Year"
+          , Ylim = c(-100000,100000))
+par(new=TRUE)
+gaps.plot(synth.res = synth.out1, dataprep.res = dataprep.out1,
+          Ylab = "Average Home Price",
+          Xlab = "Year"
+          , Ylim = c(-100000,100000))
+par(new=TRUE)
+gaps.plot(synth.res = synth.out2, dataprep.res = dataprep.out2,
+          Ylab = "Average Home Price",
+          Xlab = "Year"
+          , Ylim = c(-100000,100000))
+par(new=TRUE)
+gaps.plot(synth.res = synth.out3, dataprep.res = dataprep.out3,
+          Ylab = "Average Home Price",
+          Xlab = "Year"
+          , Ylim = c(-100000,100000))
+par(new=TRUE)
+gaps.plot(synth.res = synth.out4, dataprep.res = dataprep.out4,
+          Ylab = "Average Home Price",
+          Xlab = "Year"
+          , Ylim = c(-100000,100000))
+par(new=TRUE)
+gaps.plot(synth.res = synth.out5, dataprep.res = dataprep.out5,
+          Ylab = "Average Home Price",
+          Xlab = "Year"
+          , Ylim = c(-100000,100000))
+par(new=TRUE)
+gaps.plot(synth.res = synth.out6, dataprep.res = dataprep.out6,
+          Ylab = "Average Home Price",
+          Xlab = "Year"
+          , Ylim = c(-100000,100000))
+par(new=TRUE)
+gaps.plot(synth.res = synth.out7, dataprep.res = dataprep.out7,
+          Ylab = "Average Home Price",
+          Xlab = "Year"
+          , Ylim = c(-100000,100000))
+par(new=TRUE)
+gaps.plot(synth.res = synth.out8, dataprep.res = dataprep.out8,
+          Ylab = "Average Home Price",
+          Xlab = "Year"
+          , Ylim = c(-100000,100000))
+par(new=TRUE)
+gaps.plot(synth.res = synth.out9, dataprep.res = dataprep.out9,
+          Ylab = "Average Home Price",
+          Xlab = "Year"
+          , Ylim = c(-100000,100000))
+par(new=TRUE)
+
+gaps.plot(synth.res = synth.out11, dataprep.res = dataprep.out11,
+          Ylab = "Average Home Price",
+          Xlab = "Year"
+          , Ylim = c(-100000,100000))
+par(new=TRUE)
+gaps.plot(synth.res = synth.out13, dataprep.res = dataprep.out13,
+          Ylab = "Average Home Price",
+          Xlab = "Year"
+          , Ylim = c(-100000,100000))
+par(new=TRUE)
+gaps.plot(synth.res = synth.out14, dataprep.res = dataprep.out14,
+          Ylab = "Average Home Price",
+          Xlab = "Year"
+          , Ylim = c(-100000,100000))
+par(new=TRUE)
+gaps.plot(synth.res = synth.out15, dataprep.res = dataprep.out15,
+          Ylab = "Average Home Price",
+          Xlab = "Year"
+          , Ylim = c(-100000,100000))
+par(new=TRUE)
+
+
+gaps.plot(synth.res = synth.out18, dataprep.res = dataprep.out18,
+          Ylab = "Average Home Price",
+          Xlab = "Year"
+          , Ylim = c(-100000,100000))
+par(new=TRUE)
+
+gaps = dataprep.out$Y1plot - (dataprep.out$Y0plot 
+                                    %*% synth.out$solution.w)
+gaps1 = dataprep.out1$Y1plot - (dataprep.out1$Y0plot 
+                                    %*% synth.out1$solution.w)
+gaps2 = dataprep.out2$Y1plot - (dataprep.out2$Y0plot 
+                                    %*% synth.out2$solution.w)
+gaps3 = dataprep.out3$Y1plot - (dataprep.out3$Y0plot 
+                                    %*% synth.out3$solution.w)
+gaps4 = dataprep.out4$Y1plot - (dataprep.out4$Y0plot 
+                                    %*% synth.out4$solution.w)
+gaps5 = dataprep.out5$Y1plot - (dataprep.out5$Y0plot 
+                                    %*% synth.out5$solution.w)
+gaps6 = dataprep.out6$Y1plot - (dataprep.out6$Y0plot 
+                                    %*% synth.out6$solution.w)
+gaps7 = dataprep.out7$Y1plot - (dataprep.out7$Y0plot 
+                                    %*% synth.out7$solution.w)
+gaps8 = dataprep.out8$Y1plot - (dataprep.out8$Y0plot 
+                                    %*% synth.out8$solution.w)
+gaps9 = dataprep.out9$Y1plot - (dataprep.out9$Y0plot 
+                                    %*% synth.out9$solution.w)
+
+gaps11 = dataprep.out11$Y1plot - (dataprep.out11$Y0plot 
+                                    %*% synth.out11$solution.w)
+gaps13 = dataprep.out13$Y1plot - (dataprep.out13$Y0plot 
+                                    %*% synth.out13$solution.w)
+gaps14 = dataprep.out14$Y1plot - (dataprep.out14$Y0plot 
+                                    %*% synth.out14$solution.w)
+gaps15 = dataprep.out15$Y1plot - (dataprep.out15$Y0plot 
+                                    %*% synth.out15$solution.w)
+
+
+gaps18 = dataprep.out18$Y1plot - (dataprep.out18$Y0plot 
+                                    %*% synth.out18$solution.w)
+
+
+gaps
+gaps1
+gaps2
+gaps3
+gaps4
+gaps5
+gaps6
+gaps7
+gaps8
+gaps9
+
+gaps11
+gaps13
+gaps14
+gaps15
+
+
+gaps18
+
+```
+```{r}
+
+```
+
+```{r}
+#Model with lagged data
+df <- read.csv("C:/Users/wisen/OneDrive/College/Fall 2020/488 Project/LaggedDatacsv.csv")
+dataprep.out <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2011:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 12,
+                         controls.identifier = c(1:9,11,13:19),
+                         time.optimize.ssr = 2011:2014,
+                         time.plot = 2011:2019
+                         )
+synth.out = synth(data.prep.obj = dataprep.out, method = "All" )
+
+dataprep.out1 <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2011:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 1,
+                         controls.identifier = c(2:9,11:19),
+                         time.optimize.ssr = 2011:2014,
+                         time.plot = 2011:2019
+                         )
+
+synth.out1 = synth(data.prep.obj = dataprep.out1, method = "All" )
+
+dataprep.out2 <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2011:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 2,
+                         controls.identifier = c(1,3:9,11:19),
+                         time.optimize.ssr = 2011:2014,
+                         time.plot = 2011:2019
+                         )
+
+synth.out2 = synth(data.prep.obj = dataprep.out2, method = "All" )
+
+dataprep.out3 <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2011:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 3,
+                         controls.identifier = c(1:2,4:9,11:19),
+                         time.optimize.ssr = 2011:2014,
+                         time.plot = 2011:2019
+                         )
+
+synth.out3 = synth(data.prep.obj = dataprep.out3, method = "All" )
+
+dataprep.out4 <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2011:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 4,
+                         controls.identifier = c(1:3,5:9,11:19),
+                         time.optimize.ssr = 2011:2014,
+                         time.plot = 2011:2019
+                         )
+
+synth.out4 = synth(data.prep.obj = dataprep.out4, method = "All" )
+
+dataprep.out5 <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2011:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 5,
+                         controls.identifier = c(1:3,6:9,11:19),
+                         time.optimize.ssr = 2011:2014,
+                         time.plot = 2011:2019
+                         )
+
+synth.out5 = synth(data.prep.obj = dataprep.out5, method = "All" )
+
+
+dataprep.out6 <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2011:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 6,
+                         controls.identifier = c(1:5,7:9,11:19),
+                         time.optimize.ssr = 2011:2014,
+                         time.plot = 2011:2019
+                         )
+
+synth.out6 = synth(data.prep.obj = dataprep.out6, method = "All" )
+
+dataprep.out7 <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2011:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 7,
+                         controls.identifier = c(1:6,8,9,11:19),
+                         time.optimize.ssr = 2011:2014,
+                         time.plot = 2011:2019
+                         )
+
+synth.out7 = synth(data.prep.obj = dataprep.out7, method = "All" )
+
+dataprep.out8 <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2011:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 8,
+                         controls.identifier = c(1:7,9,11:19),
+                         time.optimize.ssr = 2011:2014,
+                         time.plot = 2011:2019
+                         )
+
+synth.out8 = synth(data.prep.obj = dataprep.out8, method = "All" )
+
+dataprep.out9 <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2011:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 9,
+                         controls.identifier = c(1:8,11:19),
+                         time.optimize.ssr = 2011:2014,
+                         time.plot = 2011:2019
+                         )
+
+synth.out9 = synth(data.prep.obj = dataprep.out9, method = "All" )
+
+
+dataprep.out11 <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2011:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 11,
+                         controls.identifier = c(1:9,12:19),
+                         time.optimize.ssr = 2011:2014,
+                         time.plot = 2011:2019
+                         )
+
+synth.out11 = synth(data.prep.obj = dataprep.out11, method = "All" )
+
+dataprep.out13 <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2011:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 13,
+                         controls.identifier = c(1:9,11,12,14:19),
+                         time.optimize.ssr = 2011:2014,
+                         time.plot = 2011:2019
+                         )
+
+synth.out13 = synth(data.prep.obj = dataprep.out13, method = "All" )
+
+dataprep.out14 <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2011:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 14,
+                         controls.identifier = c(1:9,11:13,15:19),
+                         time.optimize.ssr = 2011:2014,
+                         time.plot = 2011:2019
+                         )
+
+synth.out14 = synth(data.prep.obj = dataprep.out14, method = "All" )
+
+dataprep.out15 <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2011:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 15,
+                         controls.identifier = c(1:9,11:14,16:19),
+                         time.optimize.ssr = 2011:2014,
+                         time.plot = 2011:2019
+                         )
+
+synth.out15 = synth(data.prep.obj = dataprep.out15, method = "All" )
+
+dataprep.out16 <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2011:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 16,
+                         controls.identifier = c(1:9,11:15,17:19),
+                         time.optimize.ssr = 2011:2014,
+                         time.plot = 2011:2019
+                         )
+
+synth.out16 = synth(data.prep.obj = dataprep.out16, method = "All" )
+
+dataprep.out17 <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2011:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 17,
+                         controls.identifier = c(1:9,11:16,18,19),
+                         time.optimize.ssr = 2011:2014,
+                         time.plot = 2011:2019
+                         )
+
+synth.out17 = synth(data.prep.obj = dataprep.out17, method = "All" )
+
+dataprep.out18 <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2011:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 18,
+                         controls.identifier = c(1:9,11:17,19),
+                         time.optimize.ssr = 2011:2014,
+                         time.plot = 2011:2019
+                         )
+
+synth.out18 = synth(data.prep.obj = dataprep.out18, method = "All" )
+
+dataprep.out19 <- dataprep(foo = df,
+                         predictors = c("PopOver16","EmpRate","MBSA","Serv","Sales","NRCM","PTMM","MeanHouseInc","PercWhite","PercBlack","PercAsian","PercMale","MedianAge"),
+                         predictors.op = "mean", 
+                         time.predictors.prior = 2011:2014,
+                         dependent = "avghmp",
+                         unit.variable = "ï..Cityid",
+                         unit.names.variable = "City",
+                         time.variable = "Year",
+                         treatment.identifier = 19,
+                         controls.identifier = c(1:9,11:18),
+                         time.optimize.ssr = 2011:2014,
+                         time.plot = 2011:2019
+                         )
+
+synth.out19= synth(data.prep.obj = dataprep.out19, method = "All" )
+
+
+gaps.plot(synth.res = synth.out, dataprep.res = dataprep.out,
+          Ylab = "Average Home Price",
+          Xlab = "Year"
+          , Ylim = c(-100000,100000))
+par(new=TRUE)
+gaps.plot(synth.res = synth.out1, dataprep.res = dataprep.out1,
+          Ylab = "Average Home Price",
+          Xlab = "Year"
+          , Ylim = c(-100000,100000))
+par(new=TRUE)
+gaps.plot(synth.res = synth.out2, dataprep.res = dataprep.out2,
+          Ylab = "Average Home Price",
+          Xlab = "Year"
+          , Ylim = c(-100000,100000))
+par(new=TRUE)
+gaps.plot(synth.res = synth.out3, dataprep.res = dataprep.out3,
+          Ylab = "Average Home Price",
+          Xlab = "Year"
+          , Ylim = c(-100000,100000))
+par(new=TRUE)
+gaps.plot(synth.res = synth.out4, dataprep.res = dataprep.out4,
+          Ylab = "Average Home Price",
+          Xlab = "Year"
+          , Ylim = c(-100000,100000))
+par(new=TRUE)
+gaps.plot(synth.res = synth.out5, dataprep.res = dataprep.out5,
+          Ylab = "Average Home Price",
+          Xlab = "Year"
+          , Ylim = c(-100000,100000))
+par(new=TRUE)
+gaps.plot(synth.res = synth.out6, dataprep.res = dataprep.out6,
+          Ylab = "Average Home Price",
+          Xlab = "Year"
+          , Ylim = c(-100000,100000))
+par(new=TRUE)
+gaps.plot(synth.res = synth.out7, dataprep.res = dataprep.out7,
+          Ylab = "Average Home Price",
+          Xlab = "Year"
+          , Ylim = c(-100000,100000))
+par(new=TRUE)
+gaps.plot(synth.res = synth.out8, dataprep.res = dataprep.out8,
+          Ylab = "Average Home Price",
+          Xlab = "Year"
+          , Ylim = c(-100000,100000))
+par(new=TRUE)
+gaps.plot(synth.res = synth.out9, dataprep.res = dataprep.out9,
+          Ylab = "Average Home Price",
+          Xlab = "Year"
+          , Ylim = c(-100000,100000))
+par(new=TRUE)
+
+gaps.plot(synth.res = synth.out11, dataprep.res = dataprep.out11,
+          Ylab = "Average Home Price",
+          Xlab = "Year"
+          , Ylim = c(-100000,100000))
+par(new=TRUE)
+gaps.plot(synth.res = synth.out13, dataprep.res = dataprep.out13,
+          Ylab = "Average Home Price",
+          Xlab = "Year"
+          , Ylim = c(-100000,100000))
+par(new=TRUE)
+gaps.plot(synth.res = synth.out14, dataprep.res = dataprep.out14,
+          Ylab = "Average Home Price",
+          Xlab = "Year"
+          , Ylim = c(-100000,100000))
+par(new=TRUE)
+gaps.plot(synth.res = synth.out15, dataprep.res = dataprep.out15,
+          Ylab = "Average Home Price",
+          Xlab = "Year"
+          , Ylim = c(-100000,100000))
+par(new=TRUE)
+
+gaps.plot(synth.res = synth.out17, dataprep.res = dataprep.out17,
+          Ylab = "Average Home Price",
+          Xlab = "Year"
+          , Ylim = c(-100000,100000))
+par(new=TRUE)
+gaps.plot(synth.res = synth.out18, dataprep.res = dataprep.out18,
+          Ylab = "Average Home Price",
+          Xlab = "Year"
+          , Ylim = c(-100000,100000))
+par(new=TRUE)
+gaps.plot(synth.res = synth.out19, dataprep.res = dataprep.out19,
+          Ylab = "Average Home Price",
+          Xlab = "Year"
+          , Ylim = c(-100000,100000))
+
+```
+```{r}
+gaps = dataprep.out$Y1plot - (dataprep.out$Y0plot 
+                                    %*% synth.out$solution.w)
+gaps1 = dataprep.out1$Y1plot - (dataprep.out1$Y0plot 
+                                    %*% synth.out1$solution.w)
+gaps2 = dataprep.out2$Y1plot - (dataprep.out2$Y0plot 
+                                    %*% synth.out2$solution.w)
+gaps3 = dataprep.out3$Y1plot - (dataprep.out3$Y0plot 
+                                    %*% synth.out3$solution.w)
+gaps4 = dataprep.out4$Y1plot - (dataprep.out4$Y0plot 
+                                    %*% synth.out4$solution.w)
+gaps5 = dataprep.out5$Y1plot - (dataprep.out5$Y0plot 
+                                    %*% synth.out5$solution.w)
+gaps6 = dataprep.out6$Y1plot - (dataprep.out6$Y0plot 
+                                    %*% synth.out6$solution.w)
+gaps7 = dataprep.out7$Y1plot - (dataprep.out7$Y0plot 
+                                    %*% synth.out7$solution.w)
+gaps8 = dataprep.out8$Y1plot - (dataprep.out8$Y0plot 
+                                    %*% synth.out8$solution.w)
+gaps9 = dataprep.out9$Y1plot - (dataprep.out9$Y0plot 
+                                    %*% synth.out9$solution.w)
+
+gaps11 = dataprep.out11$Y1plot - (dataprep.out11$Y0plot 
+                                    %*% synth.out11$solution.w)
+gaps13 = dataprep.out13$Y1plot - (dataprep.out13$Y0plot 
+                                    %*% synth.out13$solution.w)
+gaps14 = dataprep.out14$Y1plot - (dataprep.out14$Y0plot 
+                                    %*% synth.out14$solution.w)
+gaps15 = dataprep.out15$Y1plot - (dataprep.out15$Y0plot 
+                                    %*% synth.out15$solution.w)
+
+gaps17 = dataprep.out17$Y1plot - (dataprep.out17$Y0plot 
+                                    %*% synth.out17$solution.w)
+gaps18 = dataprep.out18$Y1plot - (dataprep.out18$Y0plot 
+                                    %*% synth.out18$solution.w)
+gaps19 = dataprep.out19$Y1plot - (dataprep.out19$Y0plot 
+                                    %*% synth.out19$solution.w)
+gaps
+gaps1
+gaps2
+gaps3
+gaps4
+gaps5
+gaps6
+gaps7
+gaps8
+gaps9
+
+gaps11
+gaps13
+gaps14
+gaps15
+
+gaps17
+gaps18
+gaps19
+
+```
+
+```{r}
+gaps.plot(synth.res = synth.out, dataprep.res = dataprep.out,
+          Ylab = "Average Home Price",
+          Xlab = "Year"
+          , Ylim = c(-100000,100000))
+```
+
+```{r}
+#Start of DD model
+```
+
+```{r}
+#Event Study
+library(EventStudy)
+```
+```{r}
+dddata <- read.csv("C:/Users/wisen/OneDrive/Desktop/findata4.csv")
+dddata
+```
+```{r}
+planodata <- dddata[which(dddata$RegionName == "Plano"),]
+ggplot1 <- ggplot(dddata, aes(x= Year, y = Avghmp, color = RegionName)) +
+  geom_point() +
+  geom_vline(xintercept = 2014) +
+  geom_line(data= subset(dddata, RegionName == "Plano"), colour = "black", size = 1.5) +
+  geom_line() +
+  ggtitle("Average Home Price of Cities in Texas (Plano highlighted in black)") +
+  xlab("Year") +
+  ylab("Average Home Price")
+  
+ggplot1
+
+```
+
+```{r}
+library(devtools)
+install_github("dgrtwo/broom")
+library(broom)
+```
+```{r}
+library(multiwayvcov)
+library(lmtest)
+```
+
+```{r}
+#Full differences in differences model
+didreg <- lm(Avghmp ~ factor(RegionName) + Year + TreatDum, data = dddata)
+
+qb1 <- tidy(didreg)
+vcov_city <- cluster.vcov(didreg, dddata$RegionName)
+ddfinal <- coeftest(didreg,vcov_city)
+
+write.csv(ddfinal,"C:/Users/wisen/OneDrive/Desktop/ddfinal.csv")
+```
+```{r}
+#Only Large City Differences in Differences Model
+dddata1 <- read.csv("C:/Users/wisen/OneDrive/Desktop/findata - copy.csv")
+didreg1 <- lm(Avghmp ~ factor(RegionName) + Year + TreatDum, data = dddata1)
+qb1 <- tidy(didreg1)
+
+vcov_city <- cluster.vcov(didreg1, dddata1$RegionName)
+ddfinal <- coeftest(didreg1,vcov_city)
+
+write.csv(ddfinal,"C:/Users/wisen/OneDrive/Desktop/ddfinal2.csv")
+
+
+```
+
+```{r}
+ddfinal
+```
+
